@@ -2,7 +2,9 @@ mod constants;
 mod state;
 mod db;
 mod routes;
+mod models;
 mod middlewares;
+mod helpers;
 
 use state::AppState;
 use std::{env, sync::Arc};
