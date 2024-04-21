@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS wisdoms (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(300) NOT NULL
+);
