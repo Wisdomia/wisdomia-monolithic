@@ -7,7 +7,7 @@ mod middlewares;
 mod helpers;
 
 use state::AppState;
-use std::{env, sync::Arc};
+use std::{env, net::SocketAddr, sync::Arc};
 use db::connect;
 
 use axum::{middleware, Extension, Router};
@@ -40,7 +40,8 @@ async fn main() {
     let router = Router::new()
         .nest("/api/v1", routes::routes())
         .layer(Extension(shared_state))
+        .layer(middleware::from_fn(middlewares::rate_limit))
         .layer(middleware::map_response(response_mapper));
 
-    axum::serve(listener, router).await.unwrap();
+    axum::serve(listener, router.into_make_service_with_connect_info::<SocketAddr>()).await.unwrap();
 }

@@ -15,6 +15,17 @@ services:
     networks:
       - backend
 
+
+  redis:
+    container_name: wisdomia-monolithic-redis-container # this is used for accessing the redis service <IMPORTANT>
+    image: redis:alpine
+    ports:
+      - 6379:6379 
+    command: redis-server --loglevel warning # TODO: Why, what and do we need log level?
+    volumes:
+      - ./docker-volumes/cache:/data
+
+
 volumes:
   # sudo ls /var/lib/docker/volumes - should be here on local linux system
   esdata:
