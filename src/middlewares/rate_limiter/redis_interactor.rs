@@ -4,7 +4,7 @@ use redis::{aio::MultiplexedConnection, AsyncCommands, Client};
 
 use super::{RateLimitInfo, Result};
 
-pub trait RedisInteractor{
+pub trait RateLimiterRedisInteractor{
     async fn new(redis_url:String)->Result<Self> where Self:Sized;
     async fn get_data(&mut self,ip_addr:SocketAddr)-> Option<RateLimitInfo> ;
     async fn set_data(&mut self,ip_addr:SocketAddr,rate_limit_info:&RateLimitInfo);
@@ -17,7 +17,7 @@ pub struct RedisRateLimiterDb{
 }
 
 
-impl RedisInteractor for RedisRateLimiterDb{
+impl RateLimiterRedisInteractor for RedisRateLimiterDb{
     async fn new(redis_url:String)->Result<Self> {
         let client = Client::open(redis_url)?;
         let connection = client.get_multiplexed_async_connection().await?;
@@ -31,7 +31,7 @@ impl RedisInteractor for RedisRateLimiterDb{
     
     async fn set_data(&mut self, ip_addr: SocketAddr,rate_limit_info:&RateLimitInfo) {
         let key = ip_addr.to_string();
-        self.connection.set::<String, &RateLimitInfo, ()>(key, rate_limit_info).await.unwrap(); // TODO, why ,,() ?
+        self.connection.set::<String, &RateLimitInfo, ()>(key, rate_limit_info).await.unwrap();
 
     }
 }
