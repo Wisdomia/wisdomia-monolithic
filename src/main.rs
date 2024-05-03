@@ -5,6 +5,7 @@ mod middlewares;
 mod models;
 mod routes;
 mod state;
+mod wisdoms_checker;
 
 use db::connect;
 use state::AppState;
@@ -13,6 +14,8 @@ use std::{env, net::SocketAddr, sync::Arc};
 use axum::{middleware, Extension, Router};
 use middlewares::response_mapper;
 use tokio::net::TcpListener;
+
+use crate::wisdoms_checker::worker_thread;
 
 #[tokio::main]
 async fn main() {
@@ -43,6 +46,8 @@ async fn main() {
         .layer(Extension(shared_state))
         .layer(middleware::from_fn(middlewares::rate_limit))
         .layer(middleware::map_response(response_mapper));
+
+    tokio::spawn(worker_thread());
 
     axum::serve(
         listener,
