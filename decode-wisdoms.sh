@@ -1,0 +1,1 @@
+base64 -d encoded-wisdoms.b64 > decoded-wisdoms.json

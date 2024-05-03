@@ -1,0 +1,1 @@
+base64 wisdoms.json > encoded-wisdoms.b64
