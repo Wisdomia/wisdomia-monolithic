@@ -1,24 +1,25 @@
 mod constants;
-mod state;
 mod db;
-mod routes;
-mod models;
-mod middlewares;
 mod helpers;
+mod middlewares;
+mod models;
+mod routes;
+mod state;
 
+use db::connect;
 use state::AppState;
 use std::{env, net::SocketAddr, sync::Arc};
-use db::connect;
 
 use axum::{middleware, Extension, Router};
-use tokio::net::TcpListener;
 use middlewares::response_mapper;
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
     let _ = dotenv::dotenv();
-    let database_url = env::var("DATABASE_URL").unwrap_or_else(|_| panic!("Missing required environment variable: {}","DATABASE_URL"));
-   
+    let database_url = env::var("DATABASE_URL")
+        .unwrap_or_else(|_| panic!("Missing required environment variable: {}", "DATABASE_URL"));
+
     let tfd = tracing_fast_dev::tfd();
 
     tfd.info("wisdomia", "INITIALIZATION");
@@ -43,5 +44,10 @@ async fn main() {
         .layer(middleware::from_fn(middlewares::rate_limit))
         .layer(middleware::map_response(response_mapper));
 
-    axum::serve(listener, router.into_make_service_with_connect_info::<SocketAddr>()).await.unwrap();
+    axum::serve(
+        listener,
+        router.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .unwrap();
 }

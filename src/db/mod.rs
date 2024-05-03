@@ -1,5 +1,5 @@
-mod queries;
 mod connect;
+mod queries;
 
-pub use queries::*;
 pub use connect::*;
+pub use queries::*;

@@ -1,11 +1,10 @@
-use uuid::Uuid;
-use serde_json::json;
 use axum::{
     http::{Method, StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
 };
-
+use serde_json::json;
+use uuid::Uuid;
 
 pub async fn response_mapper(uri: Uri, method: Method, response: Response) -> Response {
     tracing_fast_dev::tfd().info("RESPONSE_MAPPER", "MIDDLEWARE");

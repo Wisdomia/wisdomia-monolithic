@@ -1,5 +1,5 @@
-use crate::models::Wisdom;
 use super::connect::Database;
+use crate::models::Wisdom;
 
 pub async fn _get_wisdoms(db: &Database) -> Result<Vec<Wisdom>, sqlx::Error> {
     tracing_fast_dev::tfd().info("GET_WISDOMS_INTERNAL", "QUERY");

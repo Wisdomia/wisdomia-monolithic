@@ -5,7 +5,6 @@ use tracing_fast_dev::tfd;
 
 pub type Database = sqlx::Pool<sqlx::Postgres>;
 
-
 #[derive(Debug)]
 pub enum Error {
     FailedConnectingToDatabase { error: String },

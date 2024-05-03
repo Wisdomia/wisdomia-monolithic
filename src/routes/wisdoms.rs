@@ -11,10 +11,8 @@ pub fn routes() -> Router {
 }
 
 fn _routes() -> Router {
-    Router::new()
-        .route("/", get(get_wisdoms))
+    Router::new().route("/", get(get_wisdoms))
 }
-
 
 async fn get_wisdoms(Extension(state): Extension<Arc<AppState>>) -> impl IntoResponse {
     tracing_fast_dev::tfd().info("GET_WISDOM", "FUNCTION");
