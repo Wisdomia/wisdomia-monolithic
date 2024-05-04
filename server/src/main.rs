@@ -5,7 +5,6 @@ mod middlewares;
 mod models;
 mod routes;
 mod state;
-mod wisdoms_checker;
 
 use db::connect;
 use state::AppState;
@@ -15,7 +14,6 @@ use axum::{middleware, Extension, Router};
 use middlewares::response_mapper;
 use tokio::net::TcpListener;
 
-use crate::wisdoms_checker::worker_thread;
 
 #[tokio::main]
 async fn main() {
@@ -30,7 +28,7 @@ async fn main() {
 
     let db = connect(database_url.as_str()).await.unwrap();
 
-    sqlx::migrate!("./migrations").run(&db).await.unwrap();
+    sqlx::migrate!("../migrations").run(&db).await.unwrap();
 
     let state = AppState { db: db.clone() };
 
@@ -47,8 +45,6 @@ async fn main() {
         .layer(Extension(shared_state))
         .layer(middleware::from_fn(middlewares::rate_limit))
         .layer(middleware::map_response(response_mapper));
-
-    tokio::spawn(worker_thread(db));
 
     axum::serve(
         listener,

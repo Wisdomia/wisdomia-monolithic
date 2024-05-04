@@ -33,11 +33,25 @@ jobs:
     - name: Install sqlx CLI
       run: cargo install sqlx-cli
 
-    - name: Build
-      run: cargo build --verbose --release
+    - name: Build server
+      run: |
+      cd server
+      cargo build --verbose --release
 
     - name: Delay for all docker service startup # TODO: its good for now... but have to fix later
       run: sleep 15  
 
-    - name: Run tests
-      run: cargo test --verbose -- --nocapture
+    - name: Run tests in server
+      run: |
+      cd server
+      cargo test --verbose -- --nocapture
+
+    - name: Build worker
+      run: |
+      cd worker
+      cargo build --verbose --release
+
+    - name: Run tests in worker
+      run: |
+      cd worker
+      cargo test --verbose -- --nocapture
