@@ -31,7 +31,7 @@ async fn main() {
 
     sqlx::migrate!("./migrations").run(&db).await.unwrap();
 
-    let state = AppState { db };
+    let state = AppState { db: db.clone() };
 
     let shared_state = Arc::new(state);
 
@@ -47,7 +47,7 @@ async fn main() {
         .layer(middleware::from_fn(middlewares::rate_limit))
         .layer(middleware::map_response(response_mapper));
 
-    tokio::spawn(worker_thread());
+    tokio::spawn(worker_thread(db));
 
     axum::serve(
         listener,
