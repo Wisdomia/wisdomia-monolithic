@@ -35,23 +35,23 @@ jobs:
 
     - name: Build server
       run: |
-      cd server
-      cargo build --verbose --release
+        cd server
+        cargo build --verbose --release
 
     - name: Delay for all docker service startup # TODO: its good for now... but have to fix later
       run: sleep 15  
 
     - name: Run tests in server
       run: |
-      cd server
-      cargo test --verbose -- --nocapture
+        cd server
+        cargo test --verbose -- --nocapture
 
     - name: Build worker
       run: |
-      cd worker
-      cargo build --verbose --release
+        cd worker
+        cargo build --verbose --release
 
     - name: Run tests in worker
       run: |
-      cd worker
-      cargo test --verbose -- --nocapture
+        cd worker
+        cargo test --verbose -- --nocapture
