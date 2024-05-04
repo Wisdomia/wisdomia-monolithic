@@ -20,6 +20,7 @@ use crate::wisdoms_checker::worker_thread;
 #[tokio::main]
 async fn main() {
     let _ = dotenv::dotenv();
+
     let database_url = env::var("DATABASE_URL")
         .unwrap_or_else(|_| panic!("Missing required environment variable: {}", "DATABASE_URL"));
 
