@@ -12,8 +12,9 @@ use std::{env, net::SocketAddr, sync::Arc};
 
 use axum::{middleware, Extension, Router};
 use middlewares::response_mapper;
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::Mutex};
 
+use crate::middlewares::*;
 
 #[tokio::main]
 async fn main() {
@@ -22,17 +23,25 @@ async fn main() {
     let database_url = env::var("DATABASE_URL")
         .unwrap_or_else(|_| panic!("Missing required environment variable: {}", "DATABASE_URL"));
 
+    let redis_url = env::var("REDIS_URL")
+        .unwrap_or_else(|_| panic!("Missing required environment variable: {}", "DATABSE_URL"));
+
     let tfd = tracing_fast_dev::tfd();
 
     tfd.info("wisdomia", "INITIALIZATION");
+
+    let redis_rate_limiter_db = RedisRateLimiterDb::new(redis_url).await.unwrap();
 
     let db = connect(database_url.as_str()).await.unwrap();
 
     sqlx::migrate!("../migrations").run(&db).await.unwrap();
 
-    let state = AppState { db: db.clone() };
+    let state = AppState {
+        db: db.clone(),
+        redis_rate_limiter_db,
+    };
 
-    let shared_state = Arc::new(state);
+    let shared_state = Arc::new(Mutex::new(state));
 
     let listener = TcpListener::bind(format!("{}:{}", constants::HOST, constants::PORT))
         .await
@@ -42,8 +51,8 @@ async fn main() {
 
     let router = Router::new()
         .nest("/api/v1", routes::routes())
-        .layer(Extension(shared_state))
         .layer(middleware::from_fn(middlewares::rate_limit))
+        .layer(Extension(shared_state))
         .layer(middleware::map_response(response_mapper));
 
     axum::serve(

@@ -21,7 +21,8 @@ async fn send_tg_message(bot: Bot, message: &str, chat_id: i64) -> Result<Messag
         .await
 }
 
-//TODO: This code should BE fixed to not use so many match-es everywhere.
+// TODO: This code should BE fixed to not use so many match-es everywhere.
+// It does not look good...
 pub async fn worker_thread(pool: PgPool) {
     let _ = dotenv().ok();
     let mut prev_base64_string = String::new();
@@ -37,7 +38,7 @@ pub async fn worker_thread(pool: PgPool) {
     loop {
         tokio::time::sleep(Duration::from_secs(5)).await;
 
-        //Its one dot (.) because we are running it from the root.
+        //Its one dot (.) because we are running the worker it from the root.
         let base64_string = match fs::read_to_string("./encoded-wisdoms.b64") {
             Ok(content) => content.replace(['\n', '\r'], ""),
             Err(e) => {

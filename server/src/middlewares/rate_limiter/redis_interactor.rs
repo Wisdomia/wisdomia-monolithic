@@ -12,6 +12,7 @@ pub trait RateLimiterRedisInteractor {
     async fn set_data(&mut self, ip_addr: SocketAddr, rate_limit_info: &RateLimitInfo);
 }
 
+#[derive(Clone, Debug)]
 pub struct RedisRateLimiterDb {
     pub client: Client,
     pub connection: MultiplexedConnection,
@@ -56,7 +57,6 @@ mod tests {
     #[tokio::test]
     async fn test_new() {
         let _db = setup_test_db().await;
-        // If no panic and no error, assume successful connection and client creation
     }
 
     #[tokio::test]
