@@ -37,7 +37,8 @@ pub async fn worker_thread(pool: PgPool) {
     loop {
         tokio::time::sleep(Duration::from_secs(5)).await;
 
-        let base64_string = match fs::read_to_string("../encoded-wisdoms.b64") {
+        //Its one dot (.) because we are running it from the root.
+        let base64_string = match fs::read_to_string("./encoded-wisdoms.b64") {
             Ok(content) => content.replace(['\n', '\r'], ""),
             Err(e) => {
                 send_tg_message(
