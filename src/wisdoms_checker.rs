@@ -45,10 +45,8 @@ pub async fn worker_thread(pool: PgPool) {
             .expect("Failed to check if wisdom exists");
 
             if existing_wisdom.count == 0 {
-                sqlx::query!(
-                    "INSERT INTO wisdoms (description) VALUES ($1)",
-                    wisdom.description
-                )
+                sqlx::query("INSERT INTO wisdoms (description) VALUES ($1)")
+                .bind(&wisdom.description)
                 .execute(&pool)
                 .await
                 .expect("Failed to insert wisdom into database");
