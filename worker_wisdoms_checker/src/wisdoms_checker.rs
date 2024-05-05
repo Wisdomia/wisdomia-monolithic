@@ -36,6 +36,7 @@ pub async fn worker_thread(pool: PgPool) {
     });
 
     loop {
+        dbg!("Checking wisdoms...");
         tokio::time::sleep(Duration::from_secs(5)).await;
 
         //Its one dot (.) because we are running the worker it from the root.

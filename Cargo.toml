@@ -1,5 +1,5 @@
 [workspace]
-members = ["server", "worker"]
+members = ["server", "worker_wisdoms_checker", "worker_wisdoms_daily_rotator"]
 
 resolver = "2"
 

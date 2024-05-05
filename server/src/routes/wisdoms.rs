@@ -14,6 +14,10 @@ fn _routes() -> Router {
     Router::new().route("/", get(get_wisdoms))
 }
 
+async fn get_free_wisdoms(Extension(state): Extension<Arc<AppState>>) -> impl IntoResponse {
+    (StatusCode::OK)
+}
+
 async fn get_wisdoms(Extension(state): Extension<Arc<AppState>>) -> impl IntoResponse {
     tracing_fast_dev::tfd().info("GET_WISDOM", "FUNCTION");
     match _get_wisdoms(&state.db).await {
