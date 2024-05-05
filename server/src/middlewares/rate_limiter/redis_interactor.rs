@@ -44,6 +44,8 @@ impl RateLimiterRedisInteractor for RedisRateLimiterDb {
 
 #[cfg(test)]
 mod tests {
+    use crate::constants::REQUESTS_AMOUNT_LIMIT;
+
     use super::*;
     use std::str::FromStr;
 
@@ -63,7 +65,10 @@ mod tests {
     async fn test_set_and_get_data() {
         let mut db = setup_test_db().await;
         let test_ip = SocketAddr::from_str("127.0.0.1:8080").unwrap();
-        let rate_limit_info = RateLimitInfo { limit: 10 };
+        let rate_limit_info = RateLimitInfo {
+            limit: REQUESTS_AMOUNT_LIMIT,
+            next_reset: 0,
+        };
 
         db.set_data(test_ip, &rate_limit_info).await;
         let retrieved_data = db.get_data(test_ip).await;

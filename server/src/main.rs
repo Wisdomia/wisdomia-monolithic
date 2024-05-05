@@ -14,7 +14,10 @@ use axum::{middleware, Extension, Router};
 use middlewares::response_mapper;
 use tokio::{net::TcpListener, sync::Mutex};
 
-use crate::middlewares::*;
+use crate::{
+    constants::{REQUESTS_AMOUNT_LIMIT, REQUESTS_AMOUNT_TIME_FRAME},
+    middlewares::*,
+};
 
 #[tokio::main]
 async fn main() {
@@ -32,6 +35,11 @@ async fn main() {
 
     let redis_rate_limiter_db = RedisRateLimiterDb::new(redis_url).await.unwrap();
 
+    let rate_limiter_config = RateLimiterConfig {
+        requests_amount: REQUESTS_AMOUNT_LIMIT,
+        time_frame: REQUESTS_AMOUNT_TIME_FRAME,
+    };
+
     let db = connect(database_url.as_str()).await.unwrap();
 
     sqlx::migrate!("../migrations").run(&db).await.unwrap();
@@ -39,6 +47,7 @@ async fn main() {
     let state = AppState {
         db: db.clone(),
         redis_rate_limiter_db,
+        rate_limiter_config,
     };
 
     let shared_state = Arc::new(Mutex::new(state));
