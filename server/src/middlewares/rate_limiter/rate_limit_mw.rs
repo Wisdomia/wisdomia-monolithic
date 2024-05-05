@@ -8,14 +8,13 @@ use axum::{
     Extension,
 };
 use chrono::Local;
-use tokio::sync::Mutex;
 
 use crate::{constants::REQUESTS_AMOUNT_TIME_FRAME, state::AppState, RateLimiterRedisInteractor};
 
 pub async fn rate_limit(
     Extension(state): Extension<Arc<AppState>>,
     ConnectInfo(ip_addr): ConnectInfo<SocketAddr>,
-    mut req: Request,
+    req: Request,
     next: Next,
 ) -> Response {
     println!("Rate limiter hit with ip: {}", ip_addr);
@@ -24,7 +23,7 @@ pub async fn rate_limit(
 
     let requests_amount = state.rate_limiter_config.requests_amount;
     let next_reset = Local::now() + REQUESTS_AMOUNT_TIME_FRAME;
-    
+
     if ip_data.is_none() {
         state
             .redis_rate_limiter_db
@@ -39,13 +38,18 @@ pub async fn rate_limit(
     } else {
         let ip_data = ip_data.unwrap();
         if ip_data.limit == 0 {
-            if ip_data.next_reset<Local::now().timestamp(){
+            if ip_data.next_reset < Local::now().timestamp() {
                 state
                     .redis_rate_limiter_db
-                    .set_data(ip_addr,&crate::RateLimitInfo {
-                        limit: requests_amount,next_reset:next_reset.timestamp() 
-                    }).await;
-            } 
+                    .set_data(
+                        ip_addr,
+                        &crate::RateLimitInfo {
+                            limit: requests_amount,
+                            next_reset: next_reset.timestamp(),
+                        },
+                    )
+                    .await;
+            }
             drop(state); // drop the lock so the state can be used in next middleware.
             return (StatusCode::TOO_MANY_REQUESTS, "Too many requests!").into_response();
         }

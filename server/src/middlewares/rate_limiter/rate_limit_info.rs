@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use redis_macros::{FromRedisValue, ToRedisArgs};
 use serde::{Deserialize, Serialize};
 
