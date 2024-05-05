@@ -50,7 +50,6 @@ pub async fn rate_limit(
                     )
                     .await;
             }
-            drop(state); // drop the lock so the state can be used in next middleware.
             return (StatusCode::TOO_MANY_REQUESTS, "Too many requests!").into_response();
         }
         state
@@ -64,7 +63,6 @@ pub async fn rate_limit(
             )
             .await;
     }
-    drop(state); // drop the lock so the state can be used in next middleware.
     next.run(req).await
 
     // TODO: Dont forget to add headers for rate limit...
