@@ -1,6 +1,6 @@
 use std::net::SocketAddr;
 
-use redis::{aio::MultiplexedConnection, AsyncCommands, Client};
+use redis::{aio::MultiplexedConnection, AsyncCommands, Client, Commands};
 
 use super::{RateLimitInfo, Result};
 
@@ -8,8 +8,8 @@ pub trait RateLimiterRedisInteractor {
     async fn new(redis_url: String) -> Result<Self>
     where
         Self: Sized;
-    async fn get_data(&mut self, ip_addr: SocketAddr) -> Option<RateLimitInfo>;
-    async fn set_data(&mut self, ip_addr: SocketAddr, rate_limit_info: &RateLimitInfo);
+    async fn get_data(& self, ip_addr: SocketAddr) -> Option<RateLimitInfo>;
+    async fn set_data(& self, ip_addr: SocketAddr, rate_limit_info: &RateLimitInfo);
 }
 
 #[derive(Clone, Debug)]
@@ -21,21 +21,24 @@ pub struct RedisRateLimiterDb {
 impl RateLimiterRedisInteractor for RedisRateLimiterDb {
     async fn new(redis_url: String) -> Result<Self> {
         let client = Client::open(redis_url)?;
-        let connection = client.get_multiplexed_async_connection().await?;
+        let connection: MultiplexedConnection = client.get_multiplexed_async_connection().await?;
         Ok(Self { client, connection })
     }
 
-    async fn get_data(&mut self, ip_addr: SocketAddr) -> Option<RateLimitInfo> {
+    async fn get_data(& self, ip_addr: SocketAddr) -> Option<RateLimitInfo> {
         let key = ip_addr.to_string();
-        self.connection
+        let mut connection = self.connection.clone();
+        connection
             .get::<String, Option<RateLimitInfo>>(key)
             .await
             .unwrap()
     }
 
-    async fn set_data(&mut self, ip_addr: SocketAddr, rate_limit_info: &RateLimitInfo) {
+    async fn set_data(& self, ip_addr: SocketAddr, rate_limit_info: &RateLimitInfo) {
         let key = ip_addr.to_string();
-        self.connection
+        let mut connection = self.connection.clone();
+        
+        connection
             .set::<String, &RateLimitInfo, ()>(key, rate_limit_info)
             .await
             .unwrap();

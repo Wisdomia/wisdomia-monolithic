@@ -13,13 +13,12 @@ use tokio::sync::Mutex;
 use crate::{constants::REQUESTS_AMOUNT_TIME_FRAME, state::AppState, RateLimiterRedisInteractor};
 
 pub async fn rate_limit(
-    Extension(state): Extension<Arc<Mutex<AppState>>>,
+    Extension(state): Extension<Arc<AppState>>,
     ConnectInfo(ip_addr): ConnectInfo<SocketAddr>,
     mut req: Request,
     next: Next,
 ) -> Response {
     println!("Rate limiter hit with ip: {}", ip_addr);
-    let mut state = state.lock().await;
     let ip_data = state.redis_rate_limiter_db.get_data(ip_addr).await;
     dbg!(&ip_data);
 
