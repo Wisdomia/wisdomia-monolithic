@@ -48,10 +48,10 @@ jobs:
 
     - name: Build worker
       run: |
-        cd worker
+        cd worker_wisdoms_checker
         cargo build --verbose --release
 
     - name: Run tests in worker
       run: |
-        cd worker
+        cd worker_wisdoms_daily_rotator
         cargo test --verbose -- --nocapture
