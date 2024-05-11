@@ -50,10 +50,10 @@ jobs:
       run: |
         cd worker_wisdoms_checker
         cargo build --verbose --release
-        cargo test --verbose --nocapture
+        cargo test --verbose -- --nocapture
 
     - name: Build & run tests in worker_wisdoms_daily_rotator
       run: |
         cd worker_wisdoms_daily_rotator
         cargo build --verbose --release
-        cargo test --verbose --nocapture
+        cargo test --verbose -- --nocapture
