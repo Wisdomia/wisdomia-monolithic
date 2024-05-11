@@ -12,7 +12,7 @@ use std::{env, net::SocketAddr, sync::Arc};
 
 use axum::{middleware, Extension, Router};
 use middlewares::response_mapper;
-use tokio::{net::TcpListener, sync::Mutex};
+use tokio::net::TcpListener;
 
 use crate::{
     constants::{REQUESTS_AMOUNT_LIMIT, REQUESTS_AMOUNT_TIME_FRAME},
@@ -50,7 +50,7 @@ async fn main() {
         rate_limiter_config,
     };
 
-    let shared_state = Arc::new(Mutex::new(state));
+    let shared_state = Arc::new(state);
 
     let listener = TcpListener::bind(format!("{}:{}", constants::HOST, constants::PORT))
         .await
