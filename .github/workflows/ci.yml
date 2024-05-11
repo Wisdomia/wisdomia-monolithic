@@ -46,12 +46,14 @@ jobs:
         cd server
         cargo test --verbose -- --nocapture
 
-    - name: Build worker
+    - name: Build & run tests in worker_wisdoms_checker
       run: |
         cd worker_wisdoms_checker
         cargo build --verbose --release
+        cargo test --verbose --nocapture
 
-    - name: Run tests in worker
+    - name: Build & run tests in worker_wisdoms_daily_rotator
       run: |
         cd worker_wisdoms_daily_rotator
-        cargo test --verbose -- --nocapture
+        cargo build --verbose --release
+        cargo test --verbose --nocapture
