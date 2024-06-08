@@ -40,7 +40,7 @@ pub async fn worker_thread(pool: PgPool) {
         tokio::time::sleep(Duration::from_secs(5)).await;
 
         //Its one dot (.) because we are running the worker it from the root.
-        let base64_string = match fs::read_to_string("./encoded-wisdoms.b64") {
+        let base64_string = match fs::read_to_string("../encoded-wisdoms.b64") {
             Ok(content) => content.replace(['\n', '\r'], ""),
             Err(e) => {
                 send_tg_message(
@@ -113,7 +113,8 @@ pub async fn worker_thread(pool: PgPool) {
                     .execute(&pool)
                     .await
                 {
-                    Ok(_) => {}
+                    Ok(_) => {
+                    }
                     Err(e) => {
                         send_tg_message(
                             bot,
@@ -125,8 +126,6 @@ pub async fn worker_thread(pool: PgPool) {
                         return;
                     }
                 };
-            } else {
-                println!("Wisdom already exists, skipping: {:?}", wisdom);
             }
         }
 
